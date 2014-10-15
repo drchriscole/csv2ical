@@ -14,12 +14,12 @@ Dependencies
 This is a perl script and uses several date and calendaring libraries
 for ease of use:
 
-  Getopt::Long
-  Pod::Usage
-  Data::ICal
-  Data::ICal::Entry::Event
-  Date::ICal
-  Date::Calc
+ - Getopt::Long
+ - Pod::Usage
+ - Data::ICal
+ - Data::ICal::Entry::Event
+ - Date::ICal
+ - Date::Calc
 
 All are available in CPAN.
 
