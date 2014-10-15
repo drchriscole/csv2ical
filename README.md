@@ -1,8 +1,8 @@
 csv2ical
 ========
 
-People love spreadsheets even for things which they are suited like 
-meeting schedules.
+People love spreadsheets even for things which they are not suited, 
+like meeting schedules.
 
 This script takes a schedule created in a spreadsheet, saved to CSV
 and converts into an iCal document for easy shareing and importing
