@@ -27,7 +27,7 @@ my $VERBOSE = 1;
 my $DEBUG = 0;
 my $help;
 my $man;
-our $VERSION = '0.9';
+our $VERSION = '0.10';
 
 GetOptions (
    'csv=s'      => \$csv,
@@ -49,7 +49,6 @@ die "ERROR - start time is not valid.\n" unless ($start =~ /:/);
 die "ERROR - end time is not valid.\n" unless ($end =~ /:/);
 
 # converter for days of week
-
 my %dowCnv = (
    mon => 1,
    tue => 2,
@@ -59,6 +58,7 @@ my %dowCnv = (
    sat => 6,
    sun => 7
 );
+my $locCol = 0;
 
 ## create new iCalendar object and populate it with events
 my $calendar = Data::ICal->new(offset => "UTC") or die "ERROR - failed to create calendar object.\nDied";
@@ -68,8 +68,15 @@ while(<$fh>) {
    ##
    ##  Date,Speaker ,Universtiy ,Host,note,
    ##  15/09/2014,Tim Newman,Dundee,Newman,30 min talk.,
-   next if (/^Date/i); #skip header line 
-   my @F = split(/,/);
+	 my @F = split(/,/);
+
+	 # parse header columns to find location
+   if (/^Date/i) {
+		 my $tmpCol = findLocation(@F);
+		 $locCol = $tmpCol if ($tmpCol > 0);
+		 next
+	 }
+
    next if ($F[0] eq ""); # skip rows with no date
    my @date;
    unless (@date = Decode_Date_EU($F[0])) {
@@ -81,7 +88,7 @@ while(<$fh>) {
    # check start date is expected day
    if ($checkDow) {
      my $dow = Day_of_Week(@date);
-     
+
      my $check = substr($checkDow,0,3); # get first 3 chars of day
      $check =~ tr/A-Z/a-z/; # convert lowercase
      die "ERROR - the start date specified is not a $checkDow!\n" unless ($dow == $dowCnv{$check});
@@ -91,19 +98,24 @@ while(<$fh>) {
    if ($F[1] eq "") {
       $F[1] = 'TBC';
    }
-   
+
    # split start/end times into hours and minutes
    my ($startHr,$startMin) = split(/:/, $start);
    my ($endHr,$endMin) = split(/:/, $end);
-   
+
    # create the event and populate the calendar
    my $event = Data::ICal::Entry::Event->new();
    my $offset = "+0000";
    $offset = "+0100"if (isDST(@date) > 0);
+
+	 # set location if it exists, otherwise set as TBC
+	 my $location = 'TBC';
+	 $location = $F[$locCol] if ($locCol > 0);
+
    $event->add_properties(
       summary => $F[1],
-      description => join(":",@F[2..4]),
-      location => "SLT",
+      description => join(":",@F[2..$#F]),
+      location => $location,
       dtstart => Date::ICal->new(
          year => $date[0],
          month => $date[1],
@@ -118,11 +130,11 @@ while(<$fh>) {
          min => $endMin,
          offset => $offset
       )->ical
-      
+
    );
    $calendar->add_entry($event);
-      
-   printf "%2s %.3s %d\t$F[2]\n", English_Ordinal($date[2]), Month_to_Text($date[1]), $date[0];
+
+   printf "%2s %.3s %d\t$F[3]\n", English_Ordinal($date[2]), Month_to_Text($date[1]), $date[0];
 }
 close($fh);
 open(my $OUT, ">", $out) or die "ERROR - unable to open '$out' for write: ${!}\nDied";
@@ -133,12 +145,26 @@ exit;
 # check if date is DST or not
 sub isDST {
    my @date = @_;
-   
+
    my $time = Date_to_Time(@date,0,0,0);
    my @fullTime = localtime($time);
    return(pop @fullTime); # last element in the array is the DST flag. Pop and return it.
 }
 
+# parse header array for location
+sub findLocation {
+	my @header = @_;
+
+	my $n = 0;
+	for $a (@header) {
+		if ($a =~ /(location|venue)/i) {
+			return($n)
+		}
+		++$n
+	}
+	# no info found
+	return(-1)
+}
 
 =head1 SYNOPSIS
 
@@ -152,7 +178,7 @@ It's very quick and dirty so many assumption are made. The main ones being:
 
   - 1st column is a date in European format (day, month, year)
   - 2nd column is the subject of the event
-  
+
 There are likely to be a few bugs.
 
 =head1 OPTIONS
