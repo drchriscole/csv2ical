@@ -13,6 +13,7 @@ use Getopt::Long qw(:config auto_version);
 use Pod::Usage;
 use Data::ICal;
 use Data::ICal::Entry::Event;
+use Data::ICal::Entry::Alarm::Display;
 use Date::ICal;
 use Date::Calc qw(:all);
 
@@ -27,7 +28,7 @@ my $VERBOSE = 1;
 my $DEBUG = 0;
 my $help;
 my $man;
-our $VERSION = '0.11';
+our $VERSION = '0.12';
 
 GetOptions (
    'csv=s'      => \$csv,
@@ -122,6 +123,13 @@ while(<$fh>) {
       )->ical
 
    );
+   # add an alarm
+   my $alarm = Data::ICal::Entry::Alarm::Display->new();
+   $alarm->add_properties(
+    description => 'Reminder',
+    trigger => '-PT15M'
+   );
+   $event->add_entry($alarm);
    $calendar->add_entry($event);
 
    printf "%2s %.3s %d\t$F[2]\n", English_Ordinal($date[2]), Month_to_Text($date[1]), $date[0];
