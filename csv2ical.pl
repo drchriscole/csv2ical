@@ -27,7 +27,7 @@ my $VERBOSE = 1;
 my $DEBUG = 0;
 my $help;
 my $man;
-our $VERSION = '0.10';
+our $VERSION = '0.11';
 
 GetOptions (
    'csv=s'      => \$csv,
@@ -103,10 +103,12 @@ while(<$fh>) {
    $event->add_properties(
       summary => $F[1],
       description => join(":",@F[2..$#F]),
-      location => "SLT",
+      location => $venue,
       dtstart => Date::ICal->new(
          year => $date[0],
          month => $date[1],
+         day => $date[2],
+         hour => $startHr,
          min => $startMin,
          offset => $offset
       )->ical,
