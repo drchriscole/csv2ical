@@ -1,3 +1,3 @@
-Date,subject,details,extra_info
-01/04/14,The Grand Unifying Theory,Prof. Smith,Only kidding
-25/12/14,Christmas,Santa,Have you been good this year?
+Date,start,end,subject,venue,details,extra_info
+01/04/14,09:00,10:00,The Grand Unifying Theory,Room 1,Prof. Smith,Only kidding
+25/12/14,02:00,04:00,Christmas,Christmas Tree,Santa,Have you been good this year?

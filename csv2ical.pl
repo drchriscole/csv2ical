@@ -27,7 +27,7 @@ my $VERBOSE = 1;
 my $DEBUG = 0;
 my $help;
 my $man;
-our $VERSION = '0.10';
+our $VERSION = '0.11';
 
 GetOptions (
    'csv=s'      => \$csv,
@@ -71,7 +71,7 @@ while(<$fh>) {
 	 my @F = split(/,/);
 
 	 # parse header columns to find location
-   if (/^Date/i) {
+   if (/^Start/i) {
 		 my $tmpCol = findLocation(@F);
 		 $locCol = $tmpCol if ($tmpCol > 0);
 		 next
