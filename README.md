@@ -5,8 +5,8 @@ People love spreadsheets even for things which they are not suited,
 like meeting schedules.
 
 This script takes a schedule created in a spreadsheet, saved to CSV
-and converts into an iCal document for easy shareing and importing
-into calendar applications.
+and converts it to an iCal document for easy sharing and importing
+into calendaring applications.
 
 Dependencies
 ------------
@@ -18,6 +18,7 @@ for ease of use:
  - Pod::Usage
  - Data::ICal
  - Data::ICal::Entry::Event
+ - Data::ICal::Entry::Alarm::Display
  - Date::ICal
  - Date::Calc
 
